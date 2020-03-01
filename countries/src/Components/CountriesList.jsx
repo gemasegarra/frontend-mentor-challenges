@@ -1,14 +1,24 @@
 import React, { Component } from 'react';
-// import Select from 'react-select';
+import Select from 'react-select';
 import axios from 'axios';
 
 import { Grid, Card, Body, Name, Picture, Bold } from '../Components/Styled-Components/Countries';
+
+const regions = [
+  { value: 'africa', label: 'Africa' },
+  { value: 'americas', label: 'Americas' },
+  { value: 'asia', label: 'Asia' },
+  { value: 'europe', label: 'Europe' },
+  { value: 'oceania', label: 'Oceania' },
+];
+
 
 class CountriesList extends Component {
   constructor(props) {
     super(props)
     this.state = {
       countries: [],
+      selectedRegion: null,
     }
     
   }
@@ -23,7 +33,23 @@ class CountriesList extends Component {
       })
   }
 
+  handleChange = selectedRegion => {
+    this.setState({ selectedRegion },
+    () => axios.get(`https://restcountries.eu/rest/v2/region/${this.state.selectedRegion.value}
+    `)
+    .then(res => {
+      console.log(res.data);
+      this.setState({
+        countries: res.data
+      })
+     
+    })
+    );
+  };
+
   render() {
+
+    const { selectedRegion } = this.state;
 
     const { countries } = this.state;
     const allCountries = countries.map(country => {
@@ -41,6 +67,11 @@ class CountriesList extends Component {
 
     return (
       <>
+         <Select
+        value={selectedRegion}
+        onChange={this.handleChange}
+        options={regions}
+      />
       <Grid>
         {allCountries}
       </Grid>
